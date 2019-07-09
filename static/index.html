@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>WebSocket demo</title>
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    </head>
+    <body>
+    	<h2>Chat Room</h2>
+    	<audio id="ugh_audio">
+		  <source src="/static/roblox-death-sound-effect.mp3" type="audio/mpeg">
+		Your browser does not support the audio element.
+		</audio>
+
+		<div id="error_msg" class="alert alert-warning alert-dismissible fade">
+		    <strong>Warning!</strong> Isi dulu Blok!.
+		    <button type="button" class="close" data-dismiss="alert">&times;</button>
+		</div>
+
+		<ul></ul>
+
+		<div class="panel-footer">
+            <div class="input-group">
+                <input id="chat_message" type="text" class="form-control input-sm chat_input" placeholder="Write your message here..." />
+                <span class="input-group-btn">
+                <button class="btn btn-primary btn-sm" id="btn-chat"><i class="fa fa-send fa-1x" aria-hidden="true"></i></button>
+                </span>
+            </div>
+        </div>
+
+        <h6>Your Ip Address : <span id="ip"></span></h6>
+
+    	<script
+			  src="https://code.jquery.com/jquery-3.4.1.min.js"
+			  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+			  crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        <script>
+        	var ip = '192.168.77.25';
+        	var port = "5000"
+        	var host = ip + ':' + port;
+            var ws = new WebSocket("ws://"+ ip +":5678/"),
+                messages = document.createElement('ul');
+            ws.onmessage = function (event){ 
+                var messages = document.getElementsByTagName('ul')[0],
+                    message = document.createElement('li'),
+                    content = document.createTextNode(event.data);
+                message.appendChild(content);
+                messages.appendChild(message);
+ 				document.getElementById("ugh_audio").play(); 
+            };
+            document.body.appendChild(messages);
+
+
+            function chat_process(){
+        		var chat_message = $("#chat_message").val();
+		    	if (chat_message == ""){
+		    		$('#error_msg').addClass('show');
+		    	}else{
+		    		$('#error_msg').removeClass('show');
+		    		ws.send($("#ip").text() + ': ' + chat_message);
+		    		$("#chat_message").val("");
+		    	}
+        	}
+
+        	$('#btn-chat').on("click", function(){
+        		chat_process();
+        	})
+        	$("#chat_message").on('keyup', function (e) {
+			    if (e.keyCode == 13) {
+			    	chat_process();
+			    }
+			});
+
+
+        </script>
+
+        <script type="text/javascript">
+   //      	$.get("http://checkip.amazonaws.com/", function (data) {
+			// 	console.log(data);
+			//     $("#ip").text(data);
+			// });
+
+			$.getJSON("http://jsonip.com?callback=?", function (data) {
+				console.log(data);
+			    $("#ip").text(data.ip);
+			});
+
+			// $.getJSON("http://jsonip.appspot.com?callback=?", function (data) {
+			// 	console.log(data);
+			//     $("#ip").text(data);
+
+			// });
+
+
+			// $.getJSON("https://www.telize.com/geoip?callback=?",
+			// 	function(json) {
+			// 		console.log(json);
+			// 		console.log("Geolocation information for IP address: ", json.ip);
+			// 		console.log("Country: ", json.country);
+			// 		console.log("Latitude: ", json.latitude);
+			// 		console.log("Longitude: ", json.longitude);
+			// 	}
+			// );
+
+		</script>
+
+    </body>
+</html>
+
